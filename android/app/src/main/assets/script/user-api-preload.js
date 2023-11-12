@@ -1,7 +1,7 @@
 'use strict'
 
-globalThis.lx_setup = (key, id, name, description, rawScript) => {
-  delete globalThis.setup
+globalThis.lx_setup = (key, id, name, description, version, author, homepage, rawScript) => {
+  delete globalThis.lx_setup
   const _nativeCall = globalThis.__lx_native_call__
   delete globalThis.__lx_native_call__
   const set_timeout = globalThis.__lx_native_call__set_timeout
@@ -215,11 +215,6 @@ globalThis.lx_setup = (key, id, name, description, rawScript) => {
       case 'response':
         handleNativeResponse(data)
         break
-      case NATIVE_EVENTS_NAMES['utils.buffer.from']:
-        break
-      case NATIVE_EVENTS_NAMES['utils.buffer.bufToString']:
-
-        break
 
       default:
         break
@@ -241,9 +236,6 @@ globalThis.lx_setup = (key, id, name, description, rawScript) => {
   /**
    *
    * @param {*} info {
-   *                    openDevTools: false,
-   *                    status: true,
-   *                    message: 'xxx',
    *                    sources: {
    *                         kw: ['128k', '320k', 'flac', 'flac24bit'],
    *                         kg: ['128k', '320k', 'flac', 'flac24bit'],
@@ -255,15 +247,15 @@ globalThis.lx_setup = (key, id, name, description, rawScript) => {
    */
   const handleInit = (info) => {
     if (!info) {
-      nativeCall(NATIVE_EVENTS_NAMES.init, { id, info: null, status: false, errorMessage: 'Init failed' })
+      nativeCall(NATIVE_EVENTS_NAMES.init, { info: null, status: false, errorMessage: 'Missing required parameter init info' })
       // sendMessage(NATIVE_EVENTS_NAMES.init, false, null, typeof info.message === 'string' ? info.message.substring(0, 100) : '')
       return
     }
-    if (!info.status) {
-      nativeCall(NATIVE_EVENTS_NAMES.init, { id, info: null, status: false, errorMessage: 'Init failed' })
-      // sendMessage(NATIVE_EVENTS_NAMES.init, false, null, typeof info.message === 'string' ? info.message.substring(0, 100) : '')
-      return
-    }
+    // if (!info.status) {
+    //   nativeCall(NATIVE_EVENTS_NAMES.init, { info: null, status: false, errorMessage: 'Init failed' })
+    //   // sendMessage(NATIVE_EVENTS_NAMES.init, false, null, typeof info.message === 'string' ? info.message.substring(0, 100) : '')
+    //   return
+    // }
     const sourceInfo = {
       sources: {},
     }
@@ -281,10 +273,10 @@ globalThis.lx_setup = (key, id, name, description, rawScript) => {
       }
     } catch (error) {
       // console.log(error)
-      nativeCall(NATIVE_EVENTS_NAMES.init, { id, info: null, status: false, errorMessage: error.message })
+      nativeCall(NATIVE_EVENTS_NAMES.init, { info: null, status: false, errorMessage: error.message })
       return
     }
-    nativeCall(NATIVE_EVENTS_NAMES.init, { id, info: sourceInfo, status: true })
+    nativeCall(NATIVE_EVENTS_NAMES.init, { info: sourceInfo, status: true })
   }
   const handleShowUpdateAlert = (data, resolve, reject) => {
     if (!data || typeof data != 'object') return reject(new Error('parameter format error.'))
@@ -414,14 +406,18 @@ globalThis.lx_setup = (key, id, name, description, rawScript) => {
       if (timeout && typeof timeout == 'number') options.timeout = Math.min(options.timeout, 60_000)
 
       let request = sendNativeRequest(url, { method, body, form, formData, ...options }, (err, resp) => {
-        callback(err, {
-          statusCode: resp.statusCode,
-          statusMessage: resp.statusMessage,
-          headers: resp.headers,
-          // bytes: resp.bytes,
-          // raw: resp.raw,
-          body: resp.body,
-        }, resp.body)
+        if (err) {
+          callback(err, null, null)
+        } else {
+          callback(err, {
+            statusCode: resp.statusCode,
+            statusMessage: resp.statusMessage,
+            headers: resp.headers,
+            // bytes: resp.bytes,
+            // raw: resp.raw,
+            body: resp.body,
+          }, resp.body)
+        }
       })
 
       return () => {
@@ -463,8 +459,12 @@ globalThis.lx_setup = (key, id, name, description, rawScript) => {
     currentScriptInfo: {
       name,
       description,
+      version,
+      author,
+      homepage,
+      rawScript,
     },
-    version: '1.0.0',
+    version: '2.0.0',
     env: 'mobile',
   }
 
@@ -476,7 +476,7 @@ globalThis.lx_setup = (key, id, name, description, rawScript) => {
       if (name == 'script') {
         return [
           Object.freeze({
-            innerText: rawScript,
+            innerText: globalThis.lx.currentScriptInfo.rawScript,
           }),
         ]
       }

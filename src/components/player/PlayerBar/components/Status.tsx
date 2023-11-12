@@ -17,6 +17,10 @@ export default ({ autoUpdate }: { autoUpdate: boolean }) => {
 
 // const styles = createStyle({
 //   text: {
-//     fontSize: 10,
+//     // fontSize: 10,
+//     // lineHeight: 18,
+//     // height: 18,
+//     // height: '100%',
+//     // backgroundColor: 'rgba(0,0,0,0.2)',
 //   },
 // })
