@@ -25,12 +25,15 @@ export default memo(() => {
 
 const styles = createStyle({
   container: {
-    flex: 1,
+    flexShrink: 1,
+    flexGrow: 1,
     width: '100%',
     // paddingTop: progressContentPadding,
     // marginTop: -progressContentPadding,
     // backgroundColor: 'rgba(0, 0, 0, .1)',
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingBottom: 15,
+    paddingTop: 5,
     // backgroundColor: AppColors.primary,
     // backgroundColor: 'red',
     flexDirection: 'column',
@@ -38,7 +41,7 @@ const styles = createStyle({
   info: {
     flex: 0,
     flexDirection: 'row',
-    paddingBottom: 5,
+    // paddingBottom: 5,
     // justifyContent: 'flex-end',
   },
   status: {
